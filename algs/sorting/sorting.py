@@ -105,12 +105,128 @@ class MergeSort:
         return True
 
 
+class QuickSort:
+
+    def __init__(self, items):
+        self._items = items
+        self._size = len(items)
+
+    def _partition(self, low, high):
+        pivot = self._items[low]
+        x, y = low + 1, high
+
+        while True:
+            while x <= y and self._items[x] <= pivot:
+                x += 1
+            while y >= x and self._items[y] >= pivot:
+                y -= 1
+
+            if y < x:
+                break
+
+            self._items[x], self._items[y] = self._items[y], self._items[x]
+
+        self._items[low], self._items[y] = self._items[y], self._items[low]
+
+        return y
+
+    def _sort(self, low, high):
+        if low >= high:
+            return
+
+        idx = self._partition(low, high)
+        self._sort(low, idx - 1)
+        self._sort(idx + 1, high)
+
+    def sort(self):
+        self._sort(0, self._size - 1)
+
+    def swap(self, x, y):
+        self._items[x], self._items[y] = self._items[y], self._items[x]
+
+    def _quick3way(self, low, high):
+        if low >= high:
+            return
+
+        lt, eq, gt = low, low+1, high
+        pivot = self._items[low]
+
+        while eq <= gt:
+            if self._items[eq] < pivot:
+                self.swap(lt, eq)
+                lt += 1
+                eq += 1
+            elif self._items[eq] > pivot:
+                self.swap(eq, gt)
+                gt -= 1
+            else:
+                eq += 1
+
+        self._quick3way(low, lt - 1)
+        self._quick3way(gt + 1, high)
+
+    def quick3way(self):
+        self._quick3way(0, self._size - 1)
+
+    def is_sorted(self):
+        for n in range(1, self._size):
+            if self._items[n] < self._items[n-1]:
+                return False
+        return True
+
+
+class HeapSort:
+
+    def __init__(self, items):
+        self._items = items
+        self._size = len(items)
+
+    def is_sorted(self):
+        for n in range(1, self._size):
+            if self._items[n] < self._items[n-1]:
+                return False
+        return True
+
+    def _swap(self, x, y):
+        self._items[x], self._items[y] = self._items[y], self._items[x]
+
+    def _heapify(self, end, idx):
+        l = 2 * idx + 1
+        r = 2 * (idx + 1)
+        max = idx
+
+        if l < end and self._items[idx] < self._items[l]:
+            max = l
+
+        if r < end and self._items[max] < self._items[r]:
+            max = r
+
+        if max != idx:
+            self._swap(idx, max)
+            self._heapify(end, max)
+
+    def sort(self):
+
+        k = self._size // 2 - 1
+        while k >= 0:
+            self._heapify(self._size, k)
+            k -= 1
+
+        k = self._size - 1
+        while k > 0:
+            self._swap(k, 0)
+            self._heapify(k, 0)
+            k -= 1
+
+
 if __name__ == "__main__":
     items = [random.randint(0, 999) for _ in range(16)]
     # sort = Sort(items)
-    sort = MergeSort(items)
+    # sort = MergeSort(items)
+    # sort = QuickSort(items)
+    sort = HeapSort(items)
     print(sort._items, sort.is_sorted())
     # sort.shell()
     # print(sort._items, sort.is_sorted())
-    sort.bottomup()
+    sort.sort()
     print(sort._items, sort.is_sorted())

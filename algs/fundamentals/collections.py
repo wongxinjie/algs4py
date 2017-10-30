@@ -106,4 +106,3 @@ class Bag(Collection):
 
 s = Stack()
 s.pop()
-
