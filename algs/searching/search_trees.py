@@ -63,8 +63,33 @@ class TreeNode:
 
     def splice_out(self):
         if self.is_leaf():
-            pass
+            if self.is_left_child():
+                self.parent.left_child = None
+            else:
+                self.parent.right_child = None
+        elif self.has_any_children():
+            if self.has_left_child():
+                if self.is_left_child():
+                    self.parent.left_child = self.left_child
+                else:
+                    self.parent.right_child = self.left_child
+                self.left_child.parent = self.parent
+            else:
+                if self.is_left_child():
+                    self.parent.left_child = self.right_child
+                else:
+                    self.parent.right_child = self.right_child
+                self.right_child.parent = self.parent
 
+    def __iter__(self):
+        if self:
+            if self.has_left_child():
+                for each in self.left_child:
+                    yield each
+            yield self.key
+            if self.has_right_child():
+                for each in self.right_child:
+                    yield each
 
 
 class BinraySearchTree:
@@ -92,12 +117,12 @@ class BinraySearchTree:
     def _put(self, key, value, node):
         if key < node.key:
             if node.has_left_child():
-                self._put(key, value, self.left_child)
+                self._put(key, value, node.left_child)
             else:
                 node.left_child = TreeNode(key, value, parent=node)
         else:
             if node.has_right_child():
-                self._put(key, value, self.right_child)
+                self._put(key, value, node.right_child)
             else:
                 node.right_child = TreeNode(key, value, parent=node)
 
@@ -182,3 +207,18 @@ class BinraySearchTree:
                                       node.right_child.value,
                                       node.right_child.left_child,
                                       node.right_child.right_child)
+
+
+if __name__ == "__main__":
+    tree = BinraySearchTree()
+    tree[3] = 'Python'
+    tree[0] = 'C'
+    tree[1] = 'C++'
+    tree[2] = 'Go'
+    tree[4] = 'Java'
+    tree[5] = 'Javascript'
+
+    print(tree[2])
+    del tree[5]
+    for n in tree:
+        print(n)
